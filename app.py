@@ -242,6 +242,7 @@ def extract_columns_and_comparisons(sql):
     conditions = re.split(r'\s+(AND|OR)\s+', where_clause, flags=re.IGNORECASE)
     for condition in conditions:
         # Check for ANY() function with any operator
+        # <value> = ANY(column name)
         for operator in comparison_operators:
             any_match = re.search(rf"'([^']*)'\s*{re.escape(operator)}\s*ANY\s*\(\s*([^\)]+)\s*\)", condition, re.IGNORECASE)
             if any_match:
@@ -253,6 +254,23 @@ def extract_columns_and_comparisons(sql):
                         result[column] = []
                     result[column].append({'operator': operator, 'value': formatted_value, 'type': value_type})
                 continue
+        # Check for @> ARRAY construct
+        #column_name @> ARRAY[values]
+        array_match = re.search(rf"([^\s]+)\s*@>\s*ARRAY\s*\[([^\]]+)\]", condition, re.IGNORECASE)
+        if array_match:
+            column = array_match.group(1).strip()
+            values = array_match.group(2).split(',')
+            if column in where_columns:
+                formatted_values = []
+                for value in values:
+                    value = value.strip().strip("'").strip('"').rstrip(';')
+                    value_type, formatted_value = identify_value_type(value)
+                    formatted_values.append(formatted_value)
+                if column not in result:
+                    result[column] = []
+                result[column].append({'operator': '@> ARRAY', 'value': formatted_values, 'type': 'array'})
+            continue
+        
 
         # Iterate through each column found in the WHERE clause
         for column in where_columns:
