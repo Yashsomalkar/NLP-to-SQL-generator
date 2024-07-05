@@ -270,7 +270,20 @@ def extract_columns_and_comparisons(sql):
                     result[column] = []
                 result[column].append({'operator': '@> ARRAY', 'value': formatted_values, 'type': 'array'})
             continue
-        
+        any_in_match = re.search(rf"ANY\s*\(\s*([^\)]+)\s*\)\s*IN\s*\(\s*([^\)]+)\s*\)", condition, re.IGNORECASE)
+        if any_in_match:
+            column = any_in_match.group(1).strip()
+            values = any_in_match.group(2).split(',')
+            if column in where_columns:
+                formatted_values = []
+                for value in values:
+                    value = value.strip().strip("'").strip('"').rstrip(';')
+                    value_type, formatted_value = identify_value_type(value)
+                    formatted_values.append(formatted_value)
+                if column not in result:
+                    result[column] = []
+                result[column].append({'operator': 'ANY IN', 'value': formatted_values, 'type': 'array'})
+            continue
 
         # Iterate through each column found in the WHERE clause
         for column in where_columns:
