@@ -5,8 +5,9 @@ from utils.checker import (
     contains_allowed_commands,
     contains_allowed_tables,
     contains_allowed_columns,
-    extract_columns_and_comparisons
+    validate_country_codes
 )
+from utils.extract_values import extract_columns_and_comparisons
 from utils.prompt import get_sql_prompt
 from constants.table_schema import ddl_list
 from constants.additional_context import doc_list
@@ -53,6 +54,9 @@ def generate_response(question):
         if not contains_allowed_columns(sql):
             print("Response contains non-allowed columns.")
             return "Not allowed: The response contains non-allowed columns.", []
+        if not validate_country_codes(sql):
+            print("Response contains non-allowed country code or Format")
+            return "Not allowed: The response contains non-allowed country code or Format", []
         sqls.append(sql)
 
     print(f"Extracted SQLs: {sqls}")

@@ -1,3 +1,5 @@
 .streamlit/secrets.toml
 test.sql
 script.ipynb
+constants/__pycache__
+utils/__pycache__

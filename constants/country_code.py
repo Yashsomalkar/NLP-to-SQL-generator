@@ -1,0 +1,1 @@
+country_codes = ["US", "CA", "GB", "FR", "DE", "CN", "JP", "AU", "BR", "ZA"]
