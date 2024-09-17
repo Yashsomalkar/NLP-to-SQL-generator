@@ -130,13 +130,7 @@ touch ~/.streamlit/secrets.toml
 api_key = "your_openai_api_key"
 ```
 
-## Contributing
 
-Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.
-
-## License
-
-This project is licensed under the MIT License.
 
 ---
 
