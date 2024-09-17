@@ -80,7 +80,7 @@ source venv/bin/activate
 ### Step 3: Install the Required Packages
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirement.txt
 ```
 
 ## Usage
